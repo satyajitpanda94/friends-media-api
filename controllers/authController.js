@@ -9,6 +9,7 @@ export const registerUser = async (req, res) => {
             return res.status(409).json("User already present with this email")
 
         const salt = await bcrypt.genSalt(10)
+
         const hashedPassword = await bcrypt.hash(req.body.password, salt)
 
         const user = new Users({
@@ -34,13 +35,13 @@ export const loginUser = async (req, res) => {
             return res.status(400).json('Password is not authentic')
 
         const token = jwt.sign({ id: user._id }, "secretkey")
-        const { password, ...userWithoutPassword } = user._doc
+        const { email, password, ...other } = user._doc
 
         return res.cookie("accessToken", token, {
             httpOnly: true
         })
         .status(200)
-        .json(userWithoutPassword)
+        .json(other)
     } catch (err) {
         return res.status(500).json(err)
     }

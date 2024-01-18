@@ -3,7 +3,11 @@ import mongoose from "mongoose";
 import doenv from 'dotenv';
 import morgan from "morgan";
 import authRouter from "./routes/auth.js"
+import postRouter from "./routes/post.js"
+import userRouter from "./routes/user.js"
+import commentRouter from "./routes/comment.js"
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 const app = express()
 doenv.config()
@@ -18,7 +22,13 @@ mongoose.connect(process.env.MOGODB_URL, {
 app.use(express.json())
 app.use(cookieParser())
 app.use(morgan('common'))
+app.use(cors({
+    origin: process.env.CORS_ORIGIN
+}))
 
-app.use('/auth',authRouter) 
- 
-app.listen(port, () => console.log('Server Started on',port))
+app.use('/auth', authRouter)
+app.use('/post', postRouter)
+app.use('/user', userRouter)
+app.use('/comment', commentRouter)
+
+app.listen(port, () => console.log('Server Started on', port))

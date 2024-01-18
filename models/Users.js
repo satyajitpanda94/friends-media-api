@@ -1,19 +1,19 @@
 import mongoose from "mongoose";
 
-const userSchema= new mongoose.Schema({
-    name:{
-        type:String,
-        require: true
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        require: true,
     },
-    email:{
-        type:String,
+    email: {
+        type: String,
         require: true,
         unique: true
     },
-    password:{
-        type:String,
+    password: {
+        type: String,
         require: true,
-        min:6
+        min: 6
     },
     profilePic: {
         type: String,
@@ -23,37 +23,51 @@ const userSchema= new mongoose.Schema({
         type: String,
         default: ""
     },
-    followers: {
+    gender:{
+        type: String,
+    },
+    dateOfBirth:{
+        type: Date,
+    },
+    friendRequestsFrom: {
         type: Array,
         default: []
     },
-    followings: {
+    friendRequestsSent: {
         type: Array,
         default: []
     },
-    description: {
+    friends: {
+        type: Array,
+        default: []
+    },
+    photos:{
+        type: Array,
+        default: []
+    },
+    currentAddress: {
         type: String,
         max: 50
     },
-    city: {
+    permanentAddress: {
         type: String,
         max: 50
     },
-    website: {
+    worksAt: {
         type: String,
         max: 50
     },
-    from: {
+    school: {
         type: String,
         max: 50
     },
-    relationship: {
-        type: Number,
-        enum: [1, 2, 3]
+    college: {
+        type: String,
+        max: 50
     }
 },
-{
-    timestamps:true
-})
+    {
+        timestamps: true
+    })
 
 export default mongoose.model("User", userSchema)

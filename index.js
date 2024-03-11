@@ -5,6 +5,7 @@ import morgan from "morgan";
 import authRouter from "./routes/auth.js"
 import postRouter from "./routes/post.js"
 import userRouter from "./routes/user.js"
+import chatRouter from "./routes/chat.js"
 import commentRouter from "./routes/comment.js"
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -30,5 +31,6 @@ app.use('/auth', authRouter)
 app.use('/post', postRouter)
 app.use('/user', userRouter)
 app.use('/comment', commentRouter)
+app.use('/chat', chatRouter)
 
 app.listen(port, () => console.log('Server Started on', port))

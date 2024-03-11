@@ -8,9 +8,9 @@ export const getUserById = async (req, res) => {
             return res.status(404).json('user not found')
 
         const { email, password, ...other } = user._doc
-        res.status(200).json(other)
+        return res.status(200).json(other)
     } catch (err) {
-        res.status(500).json(err)
+        return res.status(500).json(err)
     }
 }
 
@@ -25,12 +25,6 @@ export const updateUser = async (req, res) => {
 
         await Object.keys(userDataToUpdate)
             .forEach((objectKey) => (userDataToUpdate[objectKey] === '' || userDataToUpdate[objectKey] == null) && delete userDataToUpdate[objectKey]);
-
-        // if (userDataToUpdate.profilePic !== null)
-        //     await user.updateOne({ $push: { photos: userDataToUpdate.profilePic } })
-
-        // if (userDataToUpdate.coverPic !== null)
-        //     await user.updateOne({ $push: { photos: userDataToUpdate.coverPic } })
 
         const updatedUser = await Users.findByIdAndUpdate(req.params.id, { $set: { ...userDataToUpdate } }, { new: true })
 
@@ -84,7 +78,7 @@ export const cancleFriendRequest = async (req, res) => {
     }
 }
 
-export const makeFriend = async (req, res) => {
+export const followFriend = async (req, res) => {
     try {
         const user = await Users.findById(req.params.id)
         const friendRequestFrom = await Users.findById(req.body.friendRequestFrom)
@@ -99,6 +93,60 @@ export const makeFriend = async (req, res) => {
         })
 
         return res.status(200).json('You have successfully make friend.')
+
+    } catch (err) {
+        return res.status(500).json(err)
+    }
+}
+
+export const unfollowFriend = async (req, res) => {
+    try {
+        const user = await Users.findById(req.params.id)
+        const friend = await Users.findById(req.body.friendId)
+
+        await user.updateOne({
+            $pull: { friends: req.body.friendId },
+        })
+        await friend.updateOne({
+            $pull: { friends: req.params.id },
+        })
+
+        return res.status(200).json('You have successfully unfollow friend.')
+
+    } catch (err) {
+        return res.status(500).json(err)
+    }
+}
+
+export const getSearchedUser = async (req, res) => {
+    try {
+        const searchedUsers = await Users.find({ name: new RegExp(req.query.q, "i") })
+            .select('-password -email')
+        return res.status(200).json(searchedUsers)
+    } catch (err) {
+        return res.status(500).json(err)
+    }
+}
+
+export const updateContacts = async (req, res) => {
+    try {
+        const user = await Users.findById(req.params.id)
+        const reciever = await Users.findById(req.body.recieverId)
+
+        await user.updateOne({
+            $pull: { contacts: req.body.recieverId },
+        })
+        await user.updateOne({
+            $push: { contacts: req.body.recieverId },
+        })
+        await reciever.updateOne({
+            $pull: { contacts: req.params.id },
+        })
+        await reciever.updateOne({
+            $push: { contacts: req.params.id },
+        })
+
+        return res.status(200).json('You have successfully updated contacts.')
 
     } catch (err) {
         return res.status(500).json(err)

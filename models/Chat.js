@@ -1,15 +1,15 @@
 import mongoose from "mongoose";
 
-const commentSchema = new mongoose.Schema({
-    postId: {
+const chatSchema = new mongoose.Schema({
+    senderUserId: {
         type: String,
         require: true
     },
-    userId: {
+    recieverUserId: {
         type: String,
         require: true
     },
-    desc: {
+    message: {
         type: String,
         max: 500
     }
@@ -18,4 +18,4 @@ const commentSchema = new mongoose.Schema({
         timestamps: true
     })
 
-export default mongoose.model("Comment", commentSchema)
+export default mongoose.model("Chat", chatSchema)

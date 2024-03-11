@@ -21,9 +21,13 @@ export const createPost = async (req, res) => {
 }
 
 export const getPostsByUserId = async (req, res) => {
-    console.log('************')
     try {
-        const posts = await Post.find({ userId: req.params.userId }).sort({ createdAt: -1 })
+        const page = Number(req.query.page) || 1
+        const limit = Number(req.query.limit) || 5
+        let skip = (page - 1) * limit
+
+        const posts = await Post.find({ userId: req.params.userId })
+            .sort({ createdAt: -1 }).skip(skip).limit(limit)
         res.status(200).json(posts)
     } catch (err) {
         res.status(500).json(err)
@@ -31,14 +35,14 @@ export const getPostsByUserId = async (req, res) => {
 }
 
 export const getTimelinePosts = async (req, res) => {
-    console.log(req.params.userId)
     try {
         const user = await Users.findById(req.params.userId)
-        console.log(user)
+        const page = Number(req.query.page) || 1
+        const limit = Number(req.query.limit) || 5
+        let skip = (page - 1) * limit
 
         const userTimelinePosts = await Post.find({ userId: { $in: [req.params.userId, ...user.friends] } })
-            .sort({ createdAt: -1 })
-        console.log(userTimelinePosts)
+            .sort({ createdAt: -1 }).skip(skip).limit(limit)
 
         res.status(200).json(userTimelinePosts)
     } catch (err) {
@@ -77,8 +81,6 @@ export const deletePost = async (req, res) => {
 }
 
 export const getAllPosts = async (req, res) => {
-    console.log('-----**------')
-
     try {
         const posts = await Post.find({})
         res.status(200).json(posts)
@@ -88,11 +90,19 @@ export const getAllPosts = async (req, res) => {
 }
 
 export const getPostById = async (req, res) => {
-    console.log(req.params.id)
-    console.log('-----------')
     try {
         const post = await Post.findById(req.params.id)
         res.status(200).json(post)
+    } catch (err) {
+        res.status(500).json(err)
+    }
+}
+
+export const getSearchedPosts = async (req, res) => {
+    try {
+        const searchedPosts = await Post.find({ description: new RegExp(req.query.q, "i") })
+            .sort({ createdAt: -1 })
+        res.status(200).json(searchedPosts)
     } catch (err) {
         res.status(500).json(err)
     }

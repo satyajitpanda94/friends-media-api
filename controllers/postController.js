@@ -41,8 +41,15 @@ export const getTimelinePosts = async (req, res) => {
         const limit = Number(req.query.limit) || 5
         let skip = (page - 1) * limit
 
-        const userTimelinePosts = await Post.find({ userId: { $in: [req.params.userId, ...user.friends] } })
-            .sort({ createdAt: -1 }).skip(skip).limit(limit)
+        let userTimelinePosts = null;
+
+        if (user.friends.length > 0) {
+            userTimelinePosts = await Post.find({ userId: { $in: [req.params.userId, ...user.friends] } })
+                .sort({ createdAt: -1 }).skip(skip).limit(limit)
+        } else {
+            userTimelinePosts = await Post.find({})
+                .sort({ createdAt: -1 }).skip(skip).limit(limit)
+        }
 
         res.status(200).json(userTimelinePosts)
     } catch (err) {

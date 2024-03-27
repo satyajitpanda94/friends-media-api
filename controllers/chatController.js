@@ -28,7 +28,6 @@ export const getChatsById = async (req, res) => {
             senderUserId: { $in: [req.params.id, req.query.recieverId] },
             recieverUserId: { $in: [req.query.recieverId, req.params.id] }
         })
-        // .sort({ createdAt: -1 })
         return res.status(200).json(chats)
     } catch (err) {
         return res.status(500).json(err)

@@ -53,3 +53,25 @@ export const logoutUser=  (req,res)=>{
         sameSite: "none"
     }).status(200).json("user has been logged out")
 }
+
+export const updateUserPassword = async(req,res) => { 
+    try {
+        const user = await Users.findById(req.params.id)
+
+        const validPassword = await bcrypt.compare(req.body.oldPassword, user.password)
+        if (!validPassword)
+            return res.status(400).json('Password is not authentic')
+
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(req.body.newPassword, salt)
+
+        await user.updateOne({
+            password: hashedPassword
+        })
+
+        return res.status(200).json('You have successfully updated Password.')
+
+    } catch (err) {
+        return res.status(500).json(err)
+    }
+ }
